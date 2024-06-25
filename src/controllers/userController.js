@@ -1,6 +1,7 @@
 // Author: TrungQuanDev: https://youtube.com/@trungquandev
 import { StatusCodes } from 'http-status-codes'
 import ms from 'ms'
+import { JwtProvider } from '~/providers/JwtProvider'
 
 /**
  * Mock nhanh thông tin user thay vì phải tạo Database rồi query.
@@ -32,8 +33,47 @@ const login = async (req, res) => {
     }
 
     // Trường hợp nhập đúng thông tin tài khoản, tạo token và trả về cho phía Client
+    // create payload to attach with jwt token includes: id, email
 
-    res.status(StatusCodes.OK).json({ message: 'Login API success!' })
+    const userInfo = {
+      id: MOCK_DATABASE.USER.ID,
+      email: MOCK_DATABASE.USER.EMAIL
+    }
+
+    // create access token and refreshtoken
+    const accessToken = await JwtProvider.generateToken(
+      userInfo,
+      ACCESS_TOKEN_SECRET_SIGNATURE,
+      '1h'
+    )
+    const refreshToken = await JwtProvider.generateToken(
+      userInfo,
+      REFRESH_TOKEN_SECRET_SIGNATURE,
+      '14 days'
+    )
+
+    //process return http only case
+    //Note: time life of cookie is different from time life of token
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: ms('14 days')
+    })
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: ms('14 days')
+    })
+
+    //retturn information of user with access token if fe require save token into the storage
+    res.status(StatusCodes.OK).json({
+      ...userInfo,
+      accessToken,
+      refreshToken
+    })
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
   }
