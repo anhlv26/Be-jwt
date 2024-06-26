@@ -9,8 +9,7 @@ import {
 const isAuthorized = async (req, res, next) => {
   //Method 1: get from request cookies-withCredentials
   const accessTokenFromCookie = req.cookies?.accessToken;
-  console.log('accessTokenFromCookie ', accessTokenFromCookie);
-  console.log('---');
+  
   if (!accessTokenFromCookie) {
     res
       .status(StatusCodes.UNAUTHORIZED)
@@ -19,20 +18,20 @@ const isAuthorized = async (req, res, next) => {
   }
 
   //method 2: get from local storage, which fe sent
-  const accessTokenFromHeader = req.headers?.authorization;
-  console.log('accessTokenFromHeader ', accessTokenFromHeader);
-  if (!accessTokenFromHeader) {
-    res
-      .status(StatusCodes.UNAUTHORIZED)
-      .json({ message: 'unauthorized! (Token not found)' });
-    return 
-  }
+  // const accessTokenFromHeader = req.headers?.authorization;
+  // console.log('accessTokenFromHeader ', accessTokenFromHeader);
+  // if (!accessTokenFromHeader) {
+  //   res
+  //     .status(StatusCodes.UNAUTHORIZED)
+  //     .json({ message: 'unauthorized! (Token not found)' });
+  //   return 
+  // }
 
   try {
     //step 1: Decrypt token
     const accessTokenDecoded = await JwtProvider.verifyToken(
-      // accessTokenFromCookie,
-      accessTokenFromHeader,
+      accessTokenFromCookie,
+      // accessTokenFromHeader,
       ACCESS_TOKEN_SECRET_SIGNATURE
     );
     //step 2: if token is valid, save token which was decrypted into the req.jwtDecode to use
