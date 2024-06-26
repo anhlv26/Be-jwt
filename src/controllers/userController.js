@@ -1,7 +1,7 @@
 // Author: TrungQuanDev: https://youtube.com/@trungquandev
 import { StatusCodes } from 'http-status-codes'
 import ms from 'ms'
-import { JwtProvider } from '~/providers/JwtProvider'
+import { JwtProvider, ACCESS_TOKEN_SECRET_SIGNATURE, REFRESH_TOKEN_SECRET_SIGNATURE } from '~/providers/JwtProvider'
 
 /**
  * Mock nhanh thông tin user thay vì phải tạo Database rồi query.
@@ -22,8 +22,7 @@ const MOCK_DATABASE = {
  * Ở đây mình làm Demo thôi nên mới đặt biến const và giá trị random ngẫu nhiên trong code nhé.
  * Xem thêm về biến môi trường: https://youtu.be/Vgr3MWb7aOw
  */
-const ACCESS_TOKEN_SECRET_SIGNATURE = 'KBgJwUETt4HeVD05WaXXI9V3JnwCVP'
-const REFRESH_TOKEN_SECRET_SIGNATURE = 'fcCjhnpeopVn2Hg1jG75MUi62051yL'
+
 
 const login = async (req, res) => {
   try {
@@ -96,6 +95,8 @@ const refreshToken = async (req, res) => {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error)
   }
 }
+
+
 
 export const userController = {
   login,
